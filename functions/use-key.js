@@ -1,8 +1,8 @@
-// Esta seria sua lista ou banco de dados de chaves, ou você poderia importá-la de outro arquivo
+// Estrutura simples para armazenar as chaves geradas (em uma implementação real, você pode querer usar um banco de dados)
 const generatedKeys = new Map();
 
 exports.handler = async function(event, context) {
-    const key = event.queryStringParameters.key;
+    const key = event.path.split("/").pop(); // Isso pega o último segmento da URL, que é a chave
     const keyInfo = generatedKeys.get(key);
     
     if (!keyInfo) {
