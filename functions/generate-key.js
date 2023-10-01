@@ -37,7 +37,7 @@ exports.handler = async function(event, context) {
     // Salva de volta no arquivo JSON
     fs.writeFileSync(keysDataPath, JSON.stringify(keysData, null, 2));
 
-    const apiUrl = `https://raihub.netlify.app/use-key/${newKey}`;
+    const apiUrl = `https://raihub.netlify.app/display-key/${newKey}`;
     const customAlias = `RaiHub-${newKey.substring(0, 5)}`;
 
     try {
