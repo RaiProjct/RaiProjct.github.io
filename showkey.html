@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar Chave</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        button {
+            padding: 10px 15px;
+            margin-top: 10px;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Sua Chave:</h2>
+        <input type="text" id="keyField" readonly>
+        <br>
+        <button onclick="copyKeyToClipboard()">Copiar Chave</button>
+    </div>
+
+    <script>
+        function copyKeyToClipboard() {
+            const keyField = document.getElementById("keyField");
+            keyField.select(); 
+            document.execCommand("copy");
+            alert("Chave copiada!");
+        }
+
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            const keyId = urlParams.get('key');
+            
+            fetch(`/api/validateKey?token=${token}&keyId=${keyId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.valid) {
+                    document.getElementById("keyField").value = data.key;
+                } else {
+                    alert("Token inválido ou chave não encontrada.");
+                }
+            });
+        }
+    </script>
+</body>
+</html>
