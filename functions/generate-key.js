@@ -16,13 +16,29 @@ exports.handler = async (event, context) => {
         await client.connect();
         
         const collection = client.db(dbName).collection(collectionName);
+
+        const userIP = event.headers['client-ip'];
+
+        const lastKeyRequest = await collection.findOne({ IP: userIP });
+        
+        if (lastKeyRequest) {
+            const currentTime = new Date();
+            const lastRequestTime = new Date(lastKeyRequest.Created);
+            const timeDifference = currentTime - lastRequestTime;
+
+            // 24 horas em milissegundos é 86400000
+            if (timeDifference < 86400000) {
+                throw new Error("You can request a new key only once every 24 hours.");
+            }
+        }
         
         const newKey = {
             Key: Math.random().toString(36).substr(2, 8).toUpperCase(),
             Token: Math.random().toString(36).substr(2, 8),
             Duration: "24h",
             Used: "No",
-            Created: new Date().toISOString()
+            Created: new Date().toISOString(),
+            IP: userIP
         };
 
         const result = await collection.insertOne(newKey);
@@ -39,7 +55,7 @@ exports.handler = async (event, context) => {
         console.error('Error:', err);
         response = {
             statusCode: 500,
-            body: JSON.stringify({ message: "Internal Server Error" })
+            body: JSON.stringify({ message: err.message })
         };
     } finally {
         await client.close();
