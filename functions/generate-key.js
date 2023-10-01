@@ -1,52 +1,97 @@
 const PouchDB = require('pouchdb');
 const axios = require('axios');
+const crypto = require('crypto');
 
 const db = new PouchDB('keysDatabase');
-const API_URL = 'https://encurta.net/api?api=d5713b391c30067d7df3073a3a4fc42bd8bc67fe&url=https://raihub.netlify.app/showkey.html&format=text&type=0';
 
-function generateRandomString(length) {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
-    for (let i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * characters.length));
+async function generateUniqueKey() {
+    let unique = false;
+    let key;
+    while (!unique) {
+        key = crypto.randomBytes(16).toString('hex');
+        try {
+            await db.get(key);
+        } catch (err) {
+            if (err.name === 'not_found') {
+                unique = true;
+            }
+        }
     }
-    return result;
+    return key;
 }
 
-async function generateKey() {
-    const key = generateRandomString(10); // função para gerar a chave
-    const token = generateRandomString(5); // função para gerar o token
+function isKeyValid(createdAt) {
+    const currentTime = new Date().getTime();
+    const keyCreationTime = new Date(createdAt).getTime();
+    const oneDayInMillis = 24 * 60 * 60 * 1000;
 
-    const doc = {
+    // Verifica se a chave tem mais de 24 horas
+    return (currentTime - keyCreationTime) <= oneDayInMillis;
+}
+
+async function hasGeneratedKeyRecently(ip) {
+    const oneDayInMillis = 24 * 60 * 60 * 1000;
+    const currentTime = new Date().getTime();
+
+    const keysFromIP = await db.find({
+        selector: {
+            ip: ip,
+            createdAt: { $gte: new Date(currentTime - oneDayInMillis).toISOString() }
+        }
+    });
+
+    return keysFromIP.docs && keysFromIP.docs.length > 0;
+}
+
+exports.handler = async (event, context) => {
+    const apiKey = "d5713b391c30067d7df3073a3a4fc42bd8bc67fe";
+    const destLink = "https://raihub.netlify.app/showkey.html";
+
+    const clientIP = event.headers['client-ip'];
+
+    const generatedRecently = await hasGeneratedKeyRecently(clientIP);
+    if (generatedRecently) {
+        return {
+            statusCode: 400,
+            body: JSON.stringify({ error: "Você só pode gerar uma chave a cada 24 horas" })
+        };
+    }
+
+    const key = await generateUniqueKey();
+    const token = crypto.randomBytes(8).toString('hex');
+
+    await db.put({
         _id: key,
         token: token,
-        createdAt: new Date().toISOString(),
-        duration: 24 * 60 * 60 * 1000, // 24 horas em milissegundos
-        used: false
-    };
+        ip: clientIP,
+        used: false,
+        createdAt: new Date().toISOString()
+    });
 
-    try {
-        await db.put(doc);
-        const shortURL = await axios.get(`${API_URL}&alias=RaiHub${token}`); // gerar URL curta
-        return { key, token, shortURL: shortURL.data };
-    } catch (err) {
-        console.error("Erro ao armazenar a chave no PouchDB:", err);
-        return null;
+    if (!isKeyValid(key.createdAt)) {
+        return {
+            statusCode: 400,
+            body: JSON.stringify({ error: "Chave expirada" })
+        };
     }
-}
 
-async function useKey(key, token) {
     try {
-        const doc = await db.get(key);
-        if (doc && !doc.used && doc.token === token && (new Date() - new Date(doc.createdAt)) <= doc.duration) {
-            doc.used = true;
-            await db.put(doc);
-            return true;
+        const response = await axios.get(`https://encurta.net/api?api=${apiKey}&url=${destLink}?token=${token}&key=${key}&alias=RaiHub${token}&type=0`);
+        if (response.data.status === "success") {
+            return {
+                statusCode: 200,
+                body: JSON.stringify({ link: response.data.shortenedUrl })
+            };
         } else {
-            return false;
+            return {
+                statusCode: 500,
+                body: JSON.stringify({ error: "Erro ao encurtar o URL" })
+            };
         }
-    } catch (err) {
-        console.error("Erro ao usar a chave:", err);
-        return false;
+    } catch (error) {
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ error: "Erro ao se comunicar com o serviço de encurtamento" })
+        };
     }
-}
+};
