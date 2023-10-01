@@ -51,12 +51,13 @@ exports.handler = async function(event, context) {
             }
         });
 
+        // Redireciona o usuário para o link encurtado
         return {
-            statusCode: 200,
-            body: JSON.stringify({
-                key: newKey, 
-                shortenedLink: response.data
-            })
+            statusCode: 302,
+            headers: {
+                Location: response.data
+            },
+            body: ''
         };
     } catch (error) {
         return {
