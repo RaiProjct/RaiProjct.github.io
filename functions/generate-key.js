@@ -1,33 +1,31 @@
+const fs = require('fs');
 const crypto = require('crypto');
 const axios = require('axios');
+const path = require('path');
 
 const API_TOKEN = 'd5713b391c30067d7df3073a3a4fc42bd8bc67fe';
 
 exports.handler = async function(event, context) {
+    const clientIp = event.headers['client-ip'];
+
+    // Carrega as chaves do arquivo JSON
+    const keysDataPath = path.join(__dirname, 'keys.json');
+    const keysData = JSON.parse(fs.readFileSync(keysDataPath, 'utf8'));
+
+    // Verifica restrição de IP aqui, se necessário...
+
     const newKey = crypto.randomBytes(16).toString('hex');
-    const apiUrl = `https://raihub.netlify.app/use-key/${newKey}`; // URL atualizada
 
-    const customAlias = `RaiHub-${newKey.substring(0, 5)}`; // Criando um alias único
+    // Adiciona a nova chave aos dados
+    keysData.push({
+        Key: newKey,
+        Ativada: new Date().toISOString(),
+        Duracao: "24 hours",  // Pode ser ajustado para mostrar um valor dinâmico
+        Usada: false
+    });
 
-    try {
-        const response = await axios.get(`https://encurta.net/api`, {
-            params: {
-                api: API_TOKEN,
-                url: apiUrl,
-                alias: customAlias,
-                format: 'text',
-                type: 0  // Tipo 0 (sem anúncios)
-            }
-        });
+    // Salva de volta no arquivo JSON
+    fs.writeFileSync(keysDataPath, JSON.stringify(keysData, null, 2));
 
-        return {
-            statusCode: 200,
-            body: JSON.stringify({ shortenedLink: response.data })
-        };
-    } catch (error) {
-        return {
-            statusCode: 500,
-            body: 'Error generating shortened link.'
-        };
-    }
+    // ... (restante do código de geração do link encurtado)
 };
