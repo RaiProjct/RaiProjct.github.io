@@ -5,7 +5,7 @@ const username = process.env.DB_USER;
 const password = process.env.DB_PASS;
 const dbName = 'Keys';
 const collectionName = 'RaiHub';
-const uri = "mongodb+srv://RaiHub:{password}@keys.98lvxlc.mongodb.net/?retryWrites=true&w=majority";
+const uri = "mongodb+srv://RaiHub:${password}@keys.98lvxlc.mongodb.net/?retryWrites=true&w=majority";
 
 exports.handler = async (event, context) => {
     const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
