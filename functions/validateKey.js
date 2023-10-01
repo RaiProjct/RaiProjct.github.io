@@ -1,33 +1,30 @@
-const MongoClient = require('mongodb').MongoClient;
-
-const username = process.env.DB_USER;
-const password = process.env.DB_PASS;
-const dbName = 'Keys';
-const collectionName = 'RaiHub';
-const uri = `mongodb+srv://${username}:${password}@cluster.mongodb.net/${dbName}?retryWrites=true&w=majority`;
+const PouchDB = require('pouchdb');
+const db = new PouchDB('keysDatabase');
 
 exports.handler = async (event, context) => {
     const token = event.queryStringParameters.token;
     const keyId = event.queryStringParameters.keyId;
 
-    const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-    await client.connect();
-    
-    const collection = client.db(dbName).collection(collectionName);
-    
-    const keyRecord = await collection.findOne({ _id: keyId });
+    try {
+        const keyRecord = await db.get(keyId);
 
-    await client.close();
+        if (keyRecord && keyRecord.token === token) {
+            return {
+                statusCode: 200,
+                body: JSON.stringify({ valid: true, key: keyId })
+            };
+        } else {
+            return {
+                statusCode: 200,
+                body: JSON.stringify({ valid: false })
+            };
+        }
 
-    if (keyRecord && keyRecord.Token === token) {
+    } catch (err) {
+        console.error("Erro ao validar a chave:", err);
         return {
-            statusCode: 200,
-            body: JSON.stringify({ valid: true, key: keyRecord.Key })
-        };
-    } else {
-        return {
-            statusCode: 200,
-            body: JSON.stringify({ valid: false })
+            statusCode: 500,
+            body: JSON.stringify({ error: "Erro interno do servidor" })
         };
     }
 };
