@@ -1,20 +1,31 @@
-// Estrutura simples para armazenar as chaves geradas (em uma implementação real, você pode querer usar um banco de dados)
-const generatedKeys = new Map();
+const fs = require('fs');
+const path = require('path');
 
 exports.handler = async function(event, context) {
-    const key = event.path.split("/").pop(); // Isso pega o último segmento da URL, que é a chave
-    const keyInfo = generatedKeys.get(key);
+    const key = event.path.split("/").pop();
     
-    if (!keyInfo) {
+    const keysDataPath = path.join(__dirname, 'keys.json');
+    const keysData = JSON.parse(fs.readFileSync(keysDataPath, 'utf8'));
+    
+    const keyData = keysData.find(k => k.Key === key);
+
+    if (!keyData) {
         return { statusCode: 404, body: "Key not found" };
     }
 
-    if (Date.now() - keyInfo.createdAt > 24 * 60 * 60 * 1000 || keyInfo.used) {
-        return { statusCode: 403, body: "Key expired or already used" };
+    if (keyData.Usada) {
+        return { statusCode: 403, body: "Key already used" };
     }
 
-    keyInfo.used = true;
-    generatedKeys.set(key, keyInfo);
+    const activatedDate = new Date(keyData.Ativada);
+    if (Date.now() - activatedDate.getTime() > 24 * 60 * 60 * 1000) {
+        return { statusCode: 403, body: "Key expired" };
+    }
+
+    keyData.Usada = true;
+
+    // Salva de volta no arquivo JSON
+    fs.writeFileSync(keysDataPath, JSON.stringify(keysData, null, 2));
 
     return { statusCode: 200, body: "Key is valid and now marked as used" };
 }
