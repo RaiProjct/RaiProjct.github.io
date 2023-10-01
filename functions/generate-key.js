@@ -1,65 +1,52 @@
-const MongoClient = require('mongodb').MongoClient;
+const PouchDB = require('pouchdb');
 const axios = require('axios');
 
-const username = process.env.DB_USER;
-const password = process.env.DB_PASS;
-const dbName = 'Keys';
-const collectionName = 'RaiHub';
-const uri = "mongodb+srv://RaiHub:WkbOwN4RSAzSKcqm@keys.98lvxlc.mongodb.net/?retryWrites=true&w=majority";
+const db = new PouchDB('keysDatabase');
+const API_URL = 'https://encurta.net/api?api=d5713b391c30067d7df3073a3a4fc42bd8bc67fe&url=https://raihub.netlify.app/showkey.html&format=text&type=0';
 
-exports.handler = async (event, context) => {
-    const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+function generateRandomString(length) {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return result;
+}
 
-    let response = {};
+async function generateKey() {
+    const key = generateRandomString(10); // função para gerar a chave
+    const token = generateRandomString(5); // função para gerar o token
+
+    const doc = {
+        _id: key,
+        token: token,
+        createdAt: new Date().toISOString(),
+        duration: 24 * 60 * 60 * 1000, // 24 horas em milissegundos
+        used: false
+    };
 
     try {
-        await client.connect();
-        
-        const collection = client.db(dbName).collection(collectionName);
-
-        const userIP = event.headers['client-ip'];
-
-        const lastKeyRequest = await collection.findOne({ IP: userIP });
-        
-        if (lastKeyRequest) {
-            const currentTime = new Date();
-            const lastRequestTime = new Date(lastKeyRequest.Created);
-            const timeDifference = currentTime - lastRequestTime;
-
-            // 24 horas em milissegundos é 86400000
-            if (timeDifference < 86400000) {
-                throw new Error("You can request a new key only once every 24 hours.");
-            }
-        }
-        
-        const newKey = {
-            Key: Math.random().toString(36).substr(2, 8).toUpperCase(),
-            Token: Math.random().toString(36).substr(2, 8),
-            Duration: "24h",
-            Used: "No",
-            Created: new Date().toISOString(),
-            IP: userIP
-        };
-
-        const result = await collection.insertOne(newKey);
-
-        const baseLink = `https://raihub.netlify.app/showkey.html`;
-        const shortenedURL = `https://encurta.net/api?api=d5713b391c30067d7df3073a3a4fc42bd8bc67fe&url=${baseLink}?token=${newKey.Token}&key=${result.insertedId}&alias=RaiHub${newKey.Token}&type=0`;
-        const shortenedURLResponse = await axios.get(shortenedURL);
-        
-        response = {
-            statusCode: 200,
-            body: JSON.stringify({ message: "Key generated successfully!", shortenedLink: shortenedURLResponse.data.shortenedUrl })
-        };
+        await db.put(doc);
+        const shortURL = await axios.get(`${API_URL}&alias=RaiHub${token}`); // gerar URL curta
+        return { key, token, shortURL: shortURL.data };
     } catch (err) {
-        console.error('Error:', err);
-        response = {
-            statusCode: 500,
-            body: JSON.stringify({ message: err.message })
-        };
-    } finally {
-        await client.close();
+        console.error("Erro ao armazenar a chave no PouchDB:", err);
+        return null;
     }
+}
 
-    return response;
-};
+async function useKey(key, token) {
+    try {
+        const doc = await db.get(key);
+        if (doc && !doc.used && doc.token === token && (new Date() - new Date(doc.createdAt)) <= doc.duration) {
+            doc.used = true;
+            await db.put(doc);
+            return true;
+        } else {
+            return false;
+        }
+    } catch (err) {
+        console.error("Erro ao usar a chave:", err);
+        return false;
+    }
+}
