@@ -33,14 +33,13 @@ async function hasGeneratedKeyRecently(ip) {
     const oneDayInMillis = 24 * 60 * 60 * 1000;
     const currentTime = new Date().getTime();
 
-    const keysFromIP = await db.find({
-        selector: {
-            ip: ip,
-            createdAt: { $gte: new Date(currentTime - oneDayInMillis).toISOString() }
-        }
-    });
+    const allKeys = await db.allDocs({ include_docs: true });
 
-    return keysFromIP.docs && keysFromIP.docs.length > 0;
+    return allKeys.rows.some(row => {
+        const doc = row.doc;
+        return doc.ip === ip && 
+               (currentTime - new Date(doc.createdAt).getTime()) <= oneDayInMillis;
+    });
 }
 
 exports.handler = async (event, context) => {
