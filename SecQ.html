@@ -10,25 +10,21 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            background-color: #1a1a1a;
-            color: #fff;
+            background-color: #f8f8f8;
+            color: #333;
         }
 
         header {
             background-color: #333;
             padding: 20px;
             text-align: center;
-        }
-
-        h1, h2, p {
-            color: #61dafb;
+            color: #fff;
         }
 
         nav {
-            display: flex;
-            justify-content: center;
             background-color: #333;
             padding: 10px;
+            text-align: center;
         }
 
         nav a {
@@ -68,9 +64,32 @@
             color: #fff;
             padding: 10px;
             text-align: center;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
+        }
+
+        /* Adicionando estilos responsivos */
+        @media (max-width: 768px) {
+            nav {
+                display: flex;
+                flex-direction: column;
+            }
+
+            nav a {
+                margin: 10px 0;
+            }
+        }
+
+        /* Adicionando animações */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        section, footer {
+            animation: fadeIn 1s ease;
         }
     </style>
 </head>
