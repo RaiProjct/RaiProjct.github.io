@@ -1,23 +1,112 @@
-<!-- No cabeçalho do seu HTML, adicione o link para o arquivo CSS -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Download do Software</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>SecQ - Rai</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header {
+            background-color: #f2f2f2;
+            padding: 20px;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-around;
+            background-color: #333;
+            padding: 10px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        section {
+            margin: 20px 0;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
+    <header>
+        <h1>SecQ - Rai</h1>
+        <p>Sua ferramenta de varredura de portas personalizada</p>
+    </header>
 
-    <h1>Bem-vindo ao Meu Software</h1>
-    
-    <p>Clique no botão abaixo para baixar e instalar o software:</p>
+    <nav>
+        <a href="#about">Sobre</a>
+        <a href="#how-to-use">Como Usar</a>
+        <!-- Adicione mais links de navegação conforme necessário -->
+    </nav>
 
-    <a href="/software/SecQ.py" download>
-        <button type="button">Baixar Software</button>
-    </a>
+    <section id="about">
+        <h2>Sobre a SecQ</h2>
+        <p>A SecQ é uma ferramenta avançada de varredura de portas, desenvolvida pela Rai para fornecer segurança aprimorada em redes e sistemas. Com recursos inovadores e uma interface amigável, a SecQ é a escolha ideal para profissionais de segurança e entusiastas da tecnologia.</p>
+        <p>Principais recursos:</p>
+        <ul>
+            <li>Análise rápida e precisa de portas abertas.</li>
+            <li>Interface intuitiva para facilitar o uso.</li>
+            <li>Compatibilidade com uma ampla variedade de sistemas.</li>
+        </ul>
+    </section>
 
-    <p>Certifique-se de ler os Termos de Serviço antes de prosseguir.</p>
+    <section id="how-to-use">
+        <h2>Como Usar</h2>
+        <p>Para utilizar a SecQ, siga estes passos simples:</p>
+        <ol>
+            <li>Insira o hostname desejado na caixa de entrada.</li>
+            <li>Clique em "Iniciar Varredura".</li>
+            <li>Aguarde enquanto a SecQ analisa as portas abertas.</li>
+            <li>Visualize os resultados e aprimore a segurança do seu sistema.</li>
+        </ol>
+    </section>
 
+    <!-- Seção de Download -->
+    <section id="download">
+        <h2>Baixar SecQ</h2>
+        <p>Clique no botão abaixo para baixar e instalar a SecQ:</p>
+        <a href="link_do_seu_software_instalador.exe" download>
+            <button type="button">Baixar SecQ</button>
+        </a>
+        <p>Certifique-se de ler os Termos de Serviço antes de prosseguir.</p>
+    </section>
+
+    <footer>
+        &copy; 2023 Rai - SecQ
+    </footer>
 </body>
 </html>
