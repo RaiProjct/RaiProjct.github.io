@@ -6,58 +6,71 @@
     <title>SecQ - Rai</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #1a1a1a;
+            color: #fff;
+        }
+
+        header {
+            background-color: #333;
             padding: 20px;
             text-align: center;
         }
 
-        header {
-            background-color: #f2f2f2;
-            padding: 20px;
+        h1, h2, p {
+            color: #61dafb;
         }
 
         nav {
             display: flex;
-            justify-content: space-around;
+            justify-content: center;
             background-color: #333;
             padding: 10px;
         }
 
         nav a {
-            color: white;
+            color: #fff;
             text-decoration: none;
+            padding: 10px;
+            margin: 0 10px;
+            transition: color 0.3s ease;
         }
 
         nav a:hover {
-            text-decoration: underline;
+            color: #61dafb;
         }
 
         section {
-            margin: 20px 0;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        button {
+            padding: 15px 30px;
+            background-color: #61dafb;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #4fa3d1;
         }
 
         footer {
             background-color: #333;
-            color: white;
+            color: #fff;
             padding: 10px;
+            text-align: center;
             position: fixed;
             bottom: 0;
             width: 100%;
-        }
-
-        button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #45a049;
         }
     </style>
 </head>
@@ -70,7 +83,7 @@
     <nav>
         <a href="#about">Sobre</a>
         <a href="#how-to-use">Como Usar</a>
-        <!-- Adicione mais links de navegação conforme necessário -->
+        <a href="#download">Baixar</a>
     </nav>
 
     <section id="about">
@@ -95,7 +108,6 @@
         </ol>
     </section>
 
-    <!-- Seção de Download -->
     <section id="download">
         <h2>Baixar SecQ</h2>
         <p>Clique no botão abaixo para baixar e instalar a SecQ:</p>
@@ -103,6 +115,11 @@
             <button type="button">Baixar SecQ</button>
         </a>
         <p>Certifique-se de ler os Termos de Serviço antes de prosseguir.</p>
+
+        <!-- Aviso de Responsabilidade -->
+        <div style="background-color: #ffcccb; padding: 10px; margin-top: 20px;">
+            <p><strong>Aviso de Responsabilidade:</strong> A utilização da SecQ para varreduras de portas deve ser realizada apenas em sistemas para os quais você tem permissão explícita. Qualquer uso indevido ou não autorizado pode ser considerado um ataque e é estritamente proibido. Não nos responsabilizamos por atividades ilegais ou não éticas realizadas com o nosso software.</p>
+        </div>
     </section>
 
     <footer>
