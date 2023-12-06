@@ -5,6 +5,8 @@ body {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    background-color: #333;
+    color: #fff;
 }
 
 header, nav, section, footer {
@@ -18,7 +20,7 @@ h1, h2, p, ul, ol, li {
 
 nav a {
     text-decoration: none;
-    color: #333;
+    color: #fff;
     margin-right: 10px;
 }
 
@@ -41,3 +43,29 @@ button {
     header, nav, section, footer {
         margin: 10px;
     }
+}
+
+/* Estilizando a seção "Como Usar" */
+#how-to-use {
+    background-color: #444;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+#how-to-use ol {
+    list-style-type: none;
+    counter-reset: item;
+    margin-left: 20px;
+}
+
+#how-to-use ol li {
+    counter-increment: item;
+    margin-bottom: 10px;
+}
+
+#how-to-use ol li::before {
+    content: counter(item);
+    color: #4CAF50;
+    font-weight: bold;
+    margin-right: 5px;
+}
