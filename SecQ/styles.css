@@ -5,7 +5,7 @@ body {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    background-color: #333;
+    background-color: #1c1c1c;
     color: #fff;
 }
 
@@ -25,15 +25,15 @@ nav a {
 }
 
 button {
-    background-color: #4CAF50;
+    background-color: #d9534f;
     color: white;
     border: none;
     padding: 10px 20px;
     text-align: center;
     text-decoration: none;
-    display: inline-block;
+    display: block; /* Ajuste para garantir alinhamento correto */
+    margin: 0 auto; /* Centralizar o botão */
     font-size: 16px;
-    margin: 4px 2px;
     cursor: pointer;
     border-radius: 5px;
 }
@@ -47,7 +47,7 @@ button {
 
 /* Estilizando a seção "Como Usar" */
 #how-to-use {
-    background-color: #444;
+    background-color: #333;
     padding: 20px;
     border-radius: 5px;
 }
@@ -65,7 +65,7 @@ button {
 
 #how-to-use ol li::before {
     content: counter(item);
-    color: #4CAF50;
+    color: #d9534f;
     font-weight: bold;
     margin-right: 5px;
 }
