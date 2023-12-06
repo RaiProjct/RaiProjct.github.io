@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function updateDownloadCount() {
         const downloadCount = localStorage.getItem('downloadCount') || 0;
         document.getElementById('download-count').innerText = downloadCount;
+        updateChart();
     }
 
     function incrementVisitCount() {
@@ -26,29 +27,49 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function updateChart() {
         const ctx = document.getElementById('myChart').getContext('2d');
-        const downloadCount = localStorage.getItem('downloadCount') || 0;
-        const visitCount = localStorage.getItem('visitCount') || 0;
+        const downloadCounts = JSON.parse(localStorage.getItem('downloadCounts')) || [];
+        const visitCounts = JSON.parse(localStorage.getItem('visitCounts')) || [];
+
+        const currentDate = new Date().toLocaleDateString();
+
+        if (downloadCounts.length === 0 || downloadCounts[downloadCounts.length - 1].date !== currentDate) {
+            downloadCounts.push({ date: currentDate, count: 0 });
+        }
+
+        if (visitCounts.length === 0 || visitCounts[visitCounts.length - 1].date !== currentDate) {
+            visitCounts.push({ date: currentDate, count: 0 });
+        }
+
+        downloadCounts[downloadCounts.length - 1].count++;
+        visitCounts[visitCounts.length - 1].count++;
+
+        localStorage.setItem('downloadCounts', JSON.stringify(downloadCounts));
+        localStorage.setItem('visitCounts', JSON.stringify(visitCounts));
 
         new Chart(ctx, {
-            type: 'bar',
+            type: 'line',
             data: {
-                labels: ['Downloads', 'Visitas'],
+                labels: downloadCounts.map(entry => entry.date),
                 datasets: [{
-                    label: 'Contadores',
-                    data: [downloadCount, visitCount],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.5)',
-                        'rgba(54, 162, 235, 0.5)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)'
-                    ],
-                    borderWidth: 1
+                    label: 'Downloads',
+                    data: downloadCounts.map(entry => entry.count),
+                    fill: false,
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 2
+                }, {
+                    label: 'Visitas',
+                    data: visitCounts.map(entry => entry.count),
+                    fill: false,
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2
                 }]
             },
             options: {
                 scales: {
+                    x: {
+                        type: 'category',
+                        labels: downloadCounts.map(entry => entry.date)
+                    },
                     y: {
                         beginAtZero: true
                     }
