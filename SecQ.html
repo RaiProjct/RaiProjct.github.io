@@ -9,18 +9,28 @@
         body {
             background-color: #111;
             color: #fff;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        header, nav, section, footer {
+        header {
             background-color: #222;
             padding: 20px;
-            margin: 10px;
-            border-radius: 10px;
-            animation: fadeIn 1s ease;
+            text-align: center;
+            border-bottom: 2px solid #e44d26;
         }
 
         h1, h2, p {
             color: #e44d26;
+            margin: 0;
+        }
+
+        nav {
+            background-color: #333;
+            padding: 10px;
+            text-align: center;
+            border-bottom: 2px solid #e44d26;
         }
 
         nav a {
@@ -32,6 +42,14 @@
 
         nav a:hover {
             color: #e44d26;
+        }
+
+        section {
+            padding: 40px 20px;
+            text-align: center;
+            background-color: #222;
+            border-radius: 10px;
+            margin: 20px;
         }
 
         button {
@@ -70,7 +88,58 @@
                 opacity: 1;
             }
         }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+            border-top: 2px solid #e44d26;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
     </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Função para incrementar o contador de downloads
+            function incrementDownloadCount() {
+                let downloadCount = localStorage.getItem('downloadCount') || 0;
+                downloadCount = parseInt(downloadCount) + 1;
+                localStorage.setItem('downloadCount', downloadCount);
+                updateDownloadCount();
+            }
+
+            // Função para atualizar o contador de downloads no HTML
+            function updateDownloadCount() {
+                const downloadCount = localStorage.getItem('downloadCount') || 0;
+                document.getElementById('download-count').innerText = downloadCount;
+            }
+
+            // Função para incrementar o contador de visitas
+            function incrementVisitCount() {
+                let visitCount = localStorage.getItem('visitCount') || 0;
+                visitCount = parseInt(visitCount) + 1;
+                localStorage.setItem('visitCount', visitCount);
+                updateVisitCount();
+            }
+
+            // Função para atualizar o contador de visitas no HTML
+            function updateVisitCount() {
+                const visitCount = localStorage.getItem('visitCount') || 0;
+                document.getElementById('visit-count').innerText = visitCount;
+            }
+
+            // Chamar as funções para inicializar os contadores
+            incrementVisitCount();
+            updateDownloadCount();
+
+            // Adicionar um ouvinte de clique ao botão de download
+            document.getElementById('download-button').addEventListener('click', function () {
+                incrementDownloadCount();
+            });
+        });
+    </script>
 </head>
 <body>
     <header>
@@ -109,14 +178,15 @@
     <section id="download">
         <h2>Baixar SecQ</h2>
         <p>Clique no botão abaixo para baixar e instalar a SecQ:</p>
-        <a href="link_do_seu_software_instalador.exe" download>
+        <a href="link_do_seu_software_instalador.exe" download id="download-button">
             <button type="button">Baixar SecQ</button>
         </a>
         <p>Certifique-se de ler os Termos de Serviço antes de prosseguir.</p>
 
-        <!-- Aviso de Responsabilidade -->
+        <!-- Contadores -->
         <div style="background-color: #444; padding: 10px; margin-top: 20px; border-radius: 5px;">
-            <p><strong>Aviso de Responsabilidade:</strong> A utilização da SecQ para varreduras de portas deve ser realizada apenas em sistemas para os quais você tem permissão explícita. Qualquer uso indevido ou não autorizado pode ser considerado um ataque e é estritamente proibido. Não nos responsabilizamos por atividades ilegais ou não éticas realizadas com o nosso software.</p>
+            <p>Downloads: <span id="download-count">0</span></p>
+            <p>Visitas: <span id="visit-count">0</span></p>
         </div>
     </section>
 
